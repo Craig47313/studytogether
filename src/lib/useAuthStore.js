@@ -1,3 +1,5 @@
+import { create } from "zustand";
+import { persist } from 'zustand/middleware';
 
 const useAuthStore = create(
     persist(
@@ -14,7 +16,7 @@ const useAuthStore = create(
         }),
         {
             name: 'auth-storage', // name of item in localStorage
-            skipHydration: true,
+            skipHydration: false
         }
     )
 );

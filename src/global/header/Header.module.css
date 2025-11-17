@@ -1,0 +1,8 @@
+.bar{
+    display: flex;
+    flex-direction:row;
+    .authButton{
+        position: absolute;
+        right: 0;
+    }
+}
