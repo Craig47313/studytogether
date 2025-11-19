@@ -6,5 +6,13 @@
     width: 100vw;
     left: 0;
     right: 0;
-    
+}
+.Footer{
+    position:absolute;
+    bottom: 0;
+    z-index: 0;
+    background-color: #332f8e;
+    width: 100vw;
+    left: 0;
+    right: 0;
 }

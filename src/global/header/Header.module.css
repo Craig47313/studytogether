@@ -1,8 +1,15 @@
 .bar{
     display: flex;
     flex-direction:row;
-    .authButton{
-        position: absolute;
-        right: 0;
-    }
+}
+.authButtonContainer{
+    position: absolute;
+    right: 0;
+}
+.homeButton{
+    border-radius: 0px;
+    text-align: center;
+    width: 70px;
+    height: 50px;
+    padding: 0;
 }

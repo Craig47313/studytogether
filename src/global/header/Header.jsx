@@ -14,8 +14,8 @@ export default function Header(){
         <div className={style.bar}>
             <button className={style.homeButton} onClick={goToHome}>home</button>
             
-            <div className={style.authButton}>
-                {user ? <button onClick={logout}>logout</button>
+            <div className={style.authButtonContainer}>
+                {user ? <button onClick={logout} className={style.homeButton}>logout</button> //steal style from homebutton
                 : 
                 <GoogleButton/>}
             </div>

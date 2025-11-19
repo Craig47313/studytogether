@@ -1,5 +1,9 @@
+import styles from './Footer.module.css';
 export default function Footer(){
     return(
-        <p>footer</p>
+        <div className={styles.bar}>
+            <p>footer</p>
+        </div>
+        
     );
 }

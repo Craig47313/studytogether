@@ -2,6 +2,7 @@ import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import useAuthStore from "../../lib/useAuthStore";
 import { doc, setDoc } from "firebase/firestore";
 import { db, auth } from "../../lib/firebase";
+import style from "./GoogleButton.module.css";
 //import google_logo from "/google-logo.png";
 export default function GoogleButton(){
     const setUser = useAuthStore((state)=>state.setUser);
@@ -13,8 +14,6 @@ export default function GoogleButton(){
             const user = result.user;
 
             console.log("Signed in user:", user);
-
-            setUser(user, true);
 
             if (result._tokenResponse?.isNewUser) {
                 const userDocRef = doc(db, "userStuff", user.uid);
@@ -31,7 +30,7 @@ export default function GoogleButton(){
     };
     
   return (
-    <button onClick={handleLogin} className="google-button">
+    <button onClick={handleLogin} className={style.GoogleButton}>
         
         {/*<img src={"./vite.svg"} alt="Google logo"/> */}
         Log in
