@@ -1,4 +1,4 @@
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup, signInWithRedirect } from "firebase/auth";
 import useAuthStore from "../../lib/useAuthStore";
 import { doc, setDoc } from "firebase/firestore";
 import { db, auth } from "../../lib/firebase";
@@ -14,8 +14,9 @@ export default function GoogleButton(){
             const user = result.user;
 
             console.log("Signed in user:", user);
-
+            setUser(user);
             if (result._tokenResponse?.isNewUser) {
+                console.log("new user");
                 const userDocRef = doc(db, "userStuff", user.uid);
                 await setDoc(userDocRef, {
                 name: user.displayName,

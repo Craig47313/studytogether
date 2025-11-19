@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import GoogleButton from "../../auth/googleButton/GoogleButton";
 import useAuthStore from "../../lib/useAuthStore";
 import style from "./Header.module.css";
@@ -10,6 +11,10 @@ export default function Header(){
     const logout = () =>{
         setUser(null);
     }
+    useEffect(()=>{
+        console.log(user);
+        console.log('change in user');
+    },[user])
     return(
         <div className={style.bar}>
             <button className={style.homeButton} onClick={goToHome}>home</button>

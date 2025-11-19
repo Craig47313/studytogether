@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import useAuthStore from "../../lib/useAuthStore";
-import { doc } from "firebase/firestore";
+import { arrayUnion, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../lib/firebase";
 import Select from "react-select";
 import { redirect } from "react-router-dom";
@@ -93,7 +93,7 @@ export default function CreateSeshForm(props){
 
 
     const handleSubmit = async (e) =>{ 
-        
+        setLoading(true);
         e.preventDefault();
 
         const userDocRef = doc(db,"userStuff",user.uid);
@@ -115,9 +115,14 @@ export default function CreateSeshForm(props){
             host: user.email,
             id: listingId
         }
+        console.log("newListing:", newListing);
 
-        
-        
+        await updateDoc(userDocRef, {
+            listings: arrayUnion(newListing)
+        });
+
+        await setDoc(listDocRef, newListing);
+        setLoading(false);
     }
     const monthOptions = [
         {value: "nov", label: "november"},
@@ -244,10 +249,10 @@ export default function CreateSeshForm(props){
                     </div>
                     <div className={`${styles.part} ${desc!==null ? styles.done : ""}`}>
                         <p>Description</p>
-                        <input type="text" placeholder="type here" className={styles.descInput} onChange={(e)=>{setDesc(e.value)}}/>
+                        <input type="text" placeholder="type here" className={styles.descInput} onChange={(e)=>{setDesc(e.target.value)}}/>
                     </div>
-                    <div className={`${styles.part} ${(desc!==null && endTime !== null && startTime !== null && day !== null && month !== null) ? styles.canSubmit : styles.cannotSubmit}`}>
-                        <button onClick={handleSubmit} className={styles.submitButton}>Submit</button> 
+                    <div className={`${styles.part} ${(desc!==undefined && endTime !== null && startTime !== null && day !== null && month !== null && !isLoading) ? styles.canSubmit : styles.cannotSubmit}`}>
+                        <button onClick={handleSubmit} className={styles.submitButton} canSubmit={!isLoading}>Submit</button> 
                     </div>
                     
                 </div>
