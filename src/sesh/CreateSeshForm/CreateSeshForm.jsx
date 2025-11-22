@@ -14,6 +14,7 @@ export default function CreateSeshForm(props){
     const [startTime, setStartTime] = useState(null);
     const [endTime, setEndTime] = useState(null);
     const [desc, setDesc] = useState(null);
+    const [title, setTitle] = useState(null);
 
     const allTimes = [
         {value: "0000", label: "00:00"},
@@ -107,6 +108,7 @@ export default function CreateSeshForm(props){
         const listDocRef = doc(db, "allListings", listingId);
 
         const newListing = {
+            title: title,
             month: month,
             day: day,
             startTime: startTime,
@@ -125,18 +127,17 @@ export default function CreateSeshForm(props){
         setLoading(false);
     }
     const monthOptions = [
-        {value: "nov", label: "november"},
-        {value: "dec", label: "december"},
-        {value: "jan", label: "january"},
-        {value: "feb", label: "february"},
-        {value: "mar", label: "march"},
-        {value: "apr", label: "april"},
-        {value: "may", label: "may"},
-        {value: "jun", label: "june"},
-        {value: "jul", label: "july"},
-        {value: "aug", label: "august"},
-        {value: "sep", label: "september"},
-        {value: "oct", label: "october"}
+        {value: 10, label: "november"},
+        {value: 11, label: "december"},
+        {value: 0, label: "january"},
+        {value: 1, label: "february"},
+        {value: 2, label: "march"},
+        {value: 3, label: "april"},
+        {value: 4, label: "may"},
+        {value: 6, label: "july"},
+        {value: 7, label: "august"},
+        {value: 8, label: "september"},
+        {value: 9, label: "october"}
     ]
     const dayOptions = [
         {value: "1", label: "1"},
@@ -218,11 +219,15 @@ export default function CreateSeshForm(props){
     };
 
     return (
-        <>
+        <div className={styles.CreateSeshFormContainer}>
             {isLoading && <h1>Loading...</h1>}
             
             <form onSubmit={handleSubmit}>
                 <div className={styles.form}>
+                    <div className={`${styles.part} ${title!==null ? styles.done : ""}`}>
+                        <p>Title</p>
+                        <input type="text" placeholder="type here" className={styles.descInput} onChange={(e)=>{setTitle(e.target.value)}}/>
+                    </div>
                     <div className={`${styles.part} ${month!==null ? styles.done : ""}`}>
                         <p>Month</p>
                         <Select options={monthOptions} onChange={(e)=>{setMonth(e.value)}}
@@ -252,11 +257,11 @@ export default function CreateSeshForm(props){
                         <input type="text" placeholder="type here" className={styles.descInput} onChange={(e)=>{setDesc(e.target.value)}}/>
                     </div>
                     <div className={`${styles.part} ${(desc!==undefined && endTime !== null && startTime !== null && day !== null && month !== null && !isLoading) ? styles.canSubmit : styles.cannotSubmit}`}>
-                        <button onClick={handleSubmit} className={styles.submitButton} canSubmit={!isLoading}>Submit</button> 
+                        <button onClick={handleSubmit} className={styles.submitButton} canSubmit={!isLoading}>Submit</button>   
                     </div>
                     
                 </div>
             </form>
-        </>
+        </div>
     );
 }

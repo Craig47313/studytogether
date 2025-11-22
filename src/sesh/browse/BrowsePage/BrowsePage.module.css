@@ -1,0 +1,33 @@
+h1{
+    left: 0;
+    right: 0;
+    position: relative;
+}
+.previewContainer{
+    display: flex;
+    flex-direction: column;
+    border: solid #646cff;
+    gap: 2px;
+    width: 200px;
+    height: 250px;
+}
+.previewContainer p{
+    margin: 0;
+    padding: 0;
+}
+.sessions{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    justify-items: center;
+    gap: 15px;
+    position: relative;
+    margin-left: 10px;
+    margin-right: 10px;
+    width: 100%;
+}
+.BrowsePage {
+    position: absolute;
+    left: 0;
+    top: 50px;
+    width: 100%;
+}

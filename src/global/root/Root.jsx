@@ -7,7 +7,7 @@ export default function Root() {
     const mainRef = useRef(null);
 
     return (
-        <>  
+        <div className={styles.fullContainer}>  
             <div className={styles.Header}>
                 <Header scrollTargetRef={mainRef}/>
             </div>
@@ -18,6 +18,6 @@ export default function Root() {
                 <Footer scrollTargetRef={mainRef} />
             </div>
             
-        </>
+        </div>
     )
 }
