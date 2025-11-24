@@ -5,6 +5,7 @@ import { db } from "../../lib/firebase";
 import Select from "react-select";
 import { redirect } from "react-router-dom";
 import styles from './CreateSeshForm.module.css';
+import { toast } from "react-toastify";
 export default function CreateSeshForm(props){
     const [isLoading, setLoading] = useState(false);
     const user = useAuthStore((state) => state.user);
@@ -94,8 +95,18 @@ export default function CreateSeshForm(props){
 
 
     const handleSubmit = async (e) =>{ 
-        setLoading(true);
         e.preventDefault();
+        if(!(desc!==undefined && endTime !== null && startTime !== null && day !== null && month !== null && !isLoading)){
+            toast.warn("Not all required fields have been filled");
+            console.log("prevented bad submission");
+            return;
+        }else if(user === null){
+            toast.warn("Please log in to create a study session");
+            console.log("prevented bad submission");
+            return;
+        }
+
+        setLoading(true);
 
         const userDocRef = doc(db,"userStuff",user.uid);
         
@@ -115,7 +126,8 @@ export default function CreateSeshForm(props){
             endTime: endTime,
             description: desc,
             host: user.email,
-            id: listingId
+            id: listingId,
+            amtSignedUp: 1
         }
         console.log("newListing:", newListing);
 
@@ -124,6 +136,7 @@ export default function CreateSeshForm(props){
         });
 
         await setDoc(listDocRef, newListing);
+        toast.success("Success!");
         setLoading(false);
     }
     const monthOptions = [
@@ -218,6 +231,27 @@ export default function CreateSeshForm(props){
         
     };
 
+    const monthFull = monthOptions.find(option => option.value === month);
+    let monthPreview = "";
+    if(monthFull){
+        monthPreview = monthFull.label.slice(0,3);
+    }
+    
+    
+
+    const convTime = (timeString) =>{
+        try{
+            const hourString = timeString.slice(0,2);
+            const minuteString = timeString.slice(2);
+            const hourMil = Number(hourString);
+            const partOfDay = hourMil < 12 ? "AM" : "PM";
+            const hourReg = hourMil % 12 !== 0 ? hourMil % 12 : 12;
+            return String(hourReg)+":"+minuteString+partOfDay;
+        }catch{
+            return timeString;
+        }
+    }
+
     return (
         <div className={styles.CreateSeshFormContainer}>
             {isLoading && <h1>Loading...</h1>}
@@ -227,6 +261,10 @@ export default function CreateSeshForm(props){
                     <div className={`${styles.part} ${title!==null ? styles.done : ""}`}>
                         <p>Title</p>
                         <input type="text" placeholder="type here" className={styles.descInput} onChange={(e)=>{setTitle(e.target.value)}}/>
+                    </div>
+                    <div className={`${styles.part} ${desc!==null ? styles.done : ""}`}>
+                        <p>Description</p>
+                        <input type="text" placeholder="type here" className={styles.descInput} onChange={(e)=>{setDesc(e.target.value)}}/>
                     </div>
                     <div className={`${styles.part} ${month!==null ? styles.done : ""}`}>
                         <p>Month</p>
@@ -252,16 +290,22 @@ export default function CreateSeshForm(props){
                         styles={selectStyles}
                         />
                     </div>
-                    <div className={`${styles.part} ${desc!==null ? styles.done : ""}`}>
-                        <p>Description</p>
-                        <input type="text" placeholder="type here" className={styles.descInput} onChange={(e)=>{setDesc(e.target.value)}}/>
-                    </div>
                     <div className={`${styles.part} ${(desc!==undefined && endTime !== null && startTime !== null && day !== null && month !== null && !isLoading) ? styles.canSubmit : styles.cannotSubmit}`}>
                         <button onClick={handleSubmit} className={styles.submitButton} canSubmit={!isLoading}>Submit</button>   
                     </div>
                     
                 </div>
             </form>
+            <div className={styles.rightDiv}>
+                <h2>Preview:</h2>
+                <div className={styles.previewContainer}>
+                    <h3>{title || "no title"} </h3>
+                    <p>Day: {monthPreview} {day}</p>
+                    <p>Start time: {convTime(startTime)}</p>
+                    <p>End time: {convTime(endTime)}</p>
+                    <p>Description: {desc}</p>
+                </div>
+            </div>
         </div>
     );
 }

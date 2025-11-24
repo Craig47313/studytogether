@@ -14,6 +14,7 @@ h1{
 .previewContainer p{
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
 }
 .sessions{
     display: grid;
