@@ -5,5 +5,6 @@ export default function Home(){
     const user = useAuthStore((state) => state.user);
     return(
         <h1>Home</h1>
+        
     );
 }

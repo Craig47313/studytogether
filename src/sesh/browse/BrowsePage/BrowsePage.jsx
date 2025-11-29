@@ -108,13 +108,38 @@ export default function BrowsePage(){
                 }
             }); 
             
+        }else if(sort === "latest"){
+            filtered = filtered.sort((a, b)=>{
+                
+                const aTotal = a.month + "/" + a.day + "/" + a.startTime; 
+                const bTotal = b.month + "/" + b.day + "/" + b.startTime; 
+                //console.log(aTotal);
+                if(aTotal > bTotal){
+                    return -1;
+                }else if(aTotal < bTotal){
+                    return 1;
+                }else{
+                    return 0;
+                }
+            }); 
+        }else if(sort === "numPeople"){
+            filtered = filtered.sort((a, b)=>{
+                //console.log(aTotal);
+                if(a.amtSignedUp > b.amtSignedUp){
+                    return -1;
+                }else if(a.amtSignedUp < b.amtSignedUp){
+                    return 1;
+                }else{
+                    return 0;
+                }
+            }); 
         }
 
         setResults(allSessions.length > 0 ? filtered : exampleResults);
         console.log("results set");
         console.log(filtered);
     }
-    
+
     useEffect(() => {
         loadListings();
     }, [query, day, month, sort, user]);
@@ -184,7 +209,7 @@ export default function BrowsePage(){
             toast.warn("Cannot join session while logged out");
             return;
         }
-
+        setResults(exampleResults);
         const userDocRef = doc(db,"userStuff",user.uid); 
         const docSnap = await getDoc(userDocRef);
         if (!docSnap.exists()) {
@@ -205,6 +230,7 @@ export default function BrowsePage(){
         });
 
         console.log("signed up for session");
+        loadListings();
     }
 
     const buttons = results.map((result) => {
