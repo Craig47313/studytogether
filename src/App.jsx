@@ -9,6 +9,7 @@ import Home from './homepage/Home';
 import Root from './global/root/Root'
 import CreateSeshForm from './sesh/createSeshForm/CreateSeshForm';
 import BrowsePage from './sesh/browse/BrowsePage/BrowsePage';
+import MySessions from './sesh/MySessions/MySessions';
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
       {
         path: "/browse",
         element: <BrowsePage/>
+      },
+      {
+        path: "/mysessions",
+        element: <MySessions/>
       }
     ]
   }

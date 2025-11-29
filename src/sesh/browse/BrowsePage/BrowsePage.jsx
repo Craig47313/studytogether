@@ -32,6 +32,7 @@ export default function BrowsePage(){
     const [searchInp, setSearchInp] = useState("");
     const [month, setMonth] = useState(null);
     const [day, setDay] = useState(null);
+    const [title, setTitle] = useState("All Sessions:");
     async function loadListings() {
         const allSessions = await getAllSessions();
         if(allSessions.length == 0){
@@ -241,7 +242,7 @@ export default function BrowsePage(){
         const month = monthOptions.find(option => option.value === result.month).label.slice(0,3);
         return (
             <div className={styles.previewContainer} key={crypto.randomUUID()}>
-                <h3>{result.title || "no title"} </h3>
+                <h2 className={styles.seshTitle}>{result.title || "no title"} </h2>
                 <button onClick={() => joinSession(result.id)} disabled={result.status !== "Joinable"} 
                     className={result.status==="Joinable" ? styles.joinButton : (result.status === "Hosting" ? styles.hostingButton : styles.attendingButton)}>
                     {result.status==="Joinable" ? "Click to join" : (result.status === "Hosting" ? "Hosting" : "Attending")}
@@ -317,16 +318,17 @@ export default function BrowsePage(){
         <div className={styles.BrowsePage}>
             <div className={styles.searchContainer}>
                 <form onSubmit={handleSearch}>
-                    <button type="submit">Search</button>
+                    <button type="submit" className={styles.searchButton}>Search</button>
                     <input type="text" className={styles.searchInput} onChange={(e)=>setSearchInp(e.target.value)} placeholder="eg: math"/>
                    
                 </form>
                 <Select onChange={(e)=>{setSort(e.value)}} options={sortOptions} styles={selectStyles} placeholder="Sort"/>
                 <Select onChange={(e)=>{setDay(e.value)}} options={dayOptions} styles={selectStyles} placeholder="Day"/>
                 <Select onChange={(e)=>{setMonth(e.value)}} options={monthOptions} styles={selectStyles} placeholder="Month"/>
+                <h1 className={styles.title}>{title}</h1>
             </div>
 
-            <h1 className={styles.title}>All Sessions:</h1>
+            
 
             <div className={styles.sessions}>
                 {results.length !== 0 ? buttons : "Loading..."}

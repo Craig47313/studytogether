@@ -1,15 +1,15 @@
-h1{
-    left: 0;
-    right: 0;
-    position: relative;
-}
+
 .previewContainer{
     display: flex;
     flex-direction: column;
     border: solid #646cff;
     gap: 2px;
     width: 200px;
-    height: 300px;
+    height: 270px;
+}
+.seshTitle{
+    padding: 0px;
+    margin: 10px;
 }
 .hostingButton{
     border-radius: 0px;
@@ -24,8 +24,8 @@ h1{
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    
 }
+
 .sessions{
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -35,8 +35,10 @@ h1{
     margin-left: 10px;
     margin-right: 10px;
     width: 100%;
+    padding-top: 20px;
     
 }
+
 .BrowsePage {
     position: absolute;
     left: 0;
@@ -48,10 +50,19 @@ h1{
 }
 .searchContainer{
     position: relative;
-    top: 30px;
+    padding-top: 10px;
     display: flex;
     flex-direction: row;
 }
+.searchButton{
+    height: 50px;
+}
+.title{
+    position: absolute;
+    left: 600px;
+    top: -30px;
+}
+
 form button{
     border-radius: 0px;
     height: 40px;

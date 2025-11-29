@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom"
 import { useRef } from "react"
-import Header from "../Header/Header";
+import Header from "../header/Header";
 import Footer from "../footer/Footer";
 import styles from "./Root.module.css";
 export default function Root() {
