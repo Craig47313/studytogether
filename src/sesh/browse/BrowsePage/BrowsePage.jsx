@@ -1,9 +1,12 @@
-import { collection, getDocs } from "firebase/firestore";
+import { arrayUnion, collection, doc, getDoc, getDocs, setDoc, updateDoc } from "firebase/firestore";
 import styles from "./browsePage.module.css";
 import { db } from "../../../lib/firebase";
 import { useEffect, useState } from "react";
 import SessionPreview from "../SessionPreview/SessionPreview";
 import { useSearchParams } from "react-router-dom";
+import Select from "react-select";
+import useAuthStore from "../../../lib/useAuthStore";
+import { toast } from "react-toastify";
 
 async function getAllSessions() {
         
@@ -19,26 +22,102 @@ async function getAllSessions() {
 }
 
 export default function BrowsePage(){
-
+    const user = useAuthStore((state) => state.user);
     const [searchParams, setSearchParams] = useSearchParams();
     const query = searchParams.get('q') || "";
 
-    useEffect(() => {
-        async function loadListings() {
-            const listings = await getAllSessions();
-            const filtered = listings.filter(listing => {
-                return (query == "" || listing.title?.toLowerCase().includes(query.toLowerCase()));
-            });
-            setResults(listings.length ? filtered : exampleResults);
-        }
-        loadListings();
-    }, [query]);
-
     const exampleResults = [];
     const [results, setResults] = useState(exampleResults);
-    const [sort, setSort] = useState("newest");
-    const [searchHeading, setSearch] = useState("");
+    const [sort, setSort] = useState("earliest");
     const [searchInp, setSearchInp] = useState("");
+    const [month, setMonth] = useState(null);
+    const [day, setDay] = useState(null);
+    async function loadListings() {
+        const allSessions = await getAllSessions();
+        if(allSessions.length == 0){
+            return;
+        }
+        let filtered = allSessions.filter(listing => {
+            let isGood = query == "" || listing.title?.toLowerCase().includes(query.toLowerCase());
+            isGood = isGood && (month == null || listing.month == month);
+            isGood = isGood && (day == null || listing.day == day);
+            return isGood;
+        });
+        console.log("user");
+        console.log(user);
+        if(user !== null && user !== undefined){
+            console.log("user !== null");
+
+            const userDocRef = doc(db,"userStuff",user.uid); 
+            const docSnap = await getDoc(userDocRef);
+            if (!docSnap.exists()) {
+                await setDoc(userDocRef, { listings: [], signups: [] });
+            }
+            const userData = docSnap.data();
+            const signups = userData.signups || [];
+            const listings = userData.listings || [];
+
+            /*console.log("signups");
+            console.log(signups);
+            console.log(signups.length);
+            console.log("listings");
+            console.log(listings);
+            console.log(listings.length);
+            console.log("filtered before adding status");
+            console.log(filtered);*/
+
+            filtered = filtered.map(listing =>{
+                if(listings.includes(listing.id)){
+                    console.log(listing.id + "in listings");
+                    listing.status = "Hosting";
+                }else if(signups.includes(listing.id)){
+                    console.log(listing.id + "in signups");
+                    listing.status = "Attending";
+                }else{
+                    console.log(listing.id + "is joinable")
+                    listing.status = "Joinable";
+                }
+                return listing;
+            });
+        }else{
+            filtered = filtered.map(listing=>{
+                console.log(listing.id + "is joinable")
+                listing.status = "Joinable";
+                return listing;
+            });
+        }
+
+        /*
+        console.log("filtered after adding status");
+        console.log(filtered);*/
+
+        
+
+        if(sort === "earliest"){
+            filtered = filtered.sort((a, b)=>{
+                
+                const aTotal = a.month + "/" + a.day + "/" + a.startTime; 
+                const bTotal = b.month + "/" + b.day + "/" + b.startTime; 
+                //console.log(aTotal);
+                if(aTotal > bTotal){
+                    return 1;
+                }else if(aTotal < bTotal){
+                    return -1;
+                }else{
+                    return 0;
+                }
+            }); 
+            
+        }
+
+        setResults(allSessions.length > 0 ? filtered : exampleResults);
+        console.log("results set");
+        console.log(filtered);
+    }
+    
+    useEffect(() => {
+        loadListings();
+    }, [query, day, month, sort, user]);
 
     const convTime = (timeString) =>{
         try{
@@ -52,28 +131,99 @@ export default function BrowsePage(){
             return timeString;
         }
     }
+    const monthOptions = [
+        {value: null, label: "any"},
+        {value: "10", label: "november"},
+        {value: "11", label: "december"},
+        {value: "00", label: "january"},
+        {value: "01", label: "february"},
+        {value: "03", label: "march"},
+        {value: "04", label: "april"},
+        {value: "05", label: "may"},
+        {value: "06", label: "july"},
+        {value: "07", label: "august"},
+        {value: "08", label: "september"},
+        {value: "09", label: "october"}
+    ]
+    const dayOptions = [
+        {value: null, label: "any"},
+        {value: "01", label: "1"},
+        {value: "02", label: "2"},
+        {value: "03", label: "3"},
+        {value: "04", label: "4"},
+        {value: "05", label: "5"},
+        {value: "06", label: "6"},
+        {value: "07", label: "7"},
+        {value: "08", label: "8"},
+        {value: "09", label: "9"},
+        {value: "10", label: "10"},
+        {value: "11", label: "11"},
+        {value: "12", label: "12"},
+        {value: "13", label: "13"},
+        {value: "14", label: "14"},
+        {value: "15", label: "15"},
+        {value: "16", label: "16"},
+        {value: "17", label: "17"},
+        {value: "18", label: "18"},
+        {value: "19", label: "19"},
+        {value: "20", label: "20"},
+        {value: "21", label: "21"},
+        {value: "22", label: "22"},
+        {value: "23", label: "23"},
+        {value: "24", label: "24"},
+        {value: "25", label: "25"},
+        {value: "26", label: "26"},
+        {value: "27", label: "27"},
+        {value: "28", label: "28"},
+        {value: "29", label: "29"},
+        {value: "30", label: "30"},
+        {value: "31", label: "31"}
+    ]
+    const joinSession = async(sessionId) => {
+        if(!user){
+            toast.warn("Cannot join session while logged out");
+            return;
+        }
+
+        const userDocRef = doc(db,"userStuff",user.uid); 
+        const docSnap = await getDoc(userDocRef);
+        if (!docSnap.exists()) {
+            await setDoc(userDocRef, { listings: [], signups: [] });
+        }
+        
+        const sessionDocRef = doc(db, "allListings", sessionId);
+        
+        const currentSession = (await getDoc(sessionDocRef)).data();
+
+        await updateDoc(sessionDocRef, {
+            amtSignedUp: currentSession.amtSignedUp + 1,
+            attendees: arrayUnion({email: user.email, id: user.uid})
+        });
+
+        await updateDoc(userDocRef, {
+            signups: arrayUnion(sessionId)
+        });
+
+        console.log("signed up for session");
+    }
 
     const buttons = results.map((result) => {
-        const monthOptions = [
-            {value: 10, label: "november"},
-            {value: 11, label: "december"},
-            {value: 0, label: "january"},
-            {value: 1, label: "february"},
-            {value: 2, label: "march"},
-            {value: 3, label: "april"},
-            {value: 4, label: "may"},
-            {value: 6, label: "july"},
-            {value: 7, label: "august"},
-            {value: 8, label: "september"},
-            {value: 9, label: "october"}
-        ]
+        //console.log(result);
+        if(!result){
+            return "";
+        }
         const month = monthOptions.find(option => option.value === result.month).label.slice(0,3);
         return (
             <div className={styles.previewContainer} key={crypto.randomUUID()}>
                 <h3>{result.title || "no title"} </h3>
+                <button onClick={() => joinSession(result.id)} disabled={result.status !== "Joinable"} 
+                    className={result.status==="Joinable" ? styles.joinButton : (result.status === "Hosting" ? styles.hostingButton : styles.attendingButton)}>
+                    {result.status==="Joinable" ? "Click to join" : (result.status === "Hosting" ? "Hosting" : "Attending")}
+                </button>
                 <p>Day: {month} {result.day}</p>
                 <p>Start time: {convTime(result.startTime)}</p>
                 <p>End time: {convTime(result.endTime)}</p>
+                <p>Amount Attending: {result.amtSignedUp}</p>
                 <p>Description: {result.description}</p>
             </div>
         );
@@ -84,19 +234,70 @@ export default function BrowsePage(){
         newSearchParams.q = searchInp;
         setSearchParams(newSearchParams);
     }
-    
+    const sortOptions = [
+        {value: "earliest", label: "earliest"},
+        {value: "latest", label: "latest"},
+        {value: "numPeople", label:"#people"}
+    ]
+    const selectStyles = {
+        menuList: (baseStyles, state) => ({
+            ...baseStyles,
+            backgroundColor: '#332f8e'
+        }),
+        option: (baseStyles, state)=>({
+            ...baseStyles,
+            backgroundColor: state.isFocused ? "#1a1a1a" : "#332f8e"
+        }),
+        valueContainer: (baseStyles, state) => ({
+            ...baseStyles,
+            backgroundColor: '#332f8e',
+            color: '#ffffffff',
+        }),
+        singleValue: (baseStyles, state) => ({
+            ...baseStyles,
+            color: '#ffffffff',
+        }),
+        dropdownIndicator: (baseStyles, state) => ({
+            ...baseStyles,
+            backgroundColor: '#332f8e',
+        }),
+        indicatorSeparator: (baseStyles, state) => ({
+            ...baseStyles,
+            backgroundColor: '#332f8e',
+        }),
+        indicatorsContainer: (baseStyles, state) => ({
+            ...baseStyles,
+            backgroundColor: '#332f8e',
+        }),
+        control: (baseStyles, state) => ({
+            ...baseStyles,
+            backgroundColor: '#332f8e',
+            borderRadius: '0px',
+            border: 'solid 2px #332f8e',
+            "&:hover":{
+                borderColor: '#646cff'
+            },
+            width: '105x',
+            height: '50px',
+            fontSize: '17px',
+            boxShadow: 'none',
 
+        })
+        
+    };
 
     return(
 
         <div className={styles.BrowsePage}>
             <div className={styles.searchContainer}>
                 <form onSubmit={handleSearch}>
-                    <input type="text" className={styles.searchInput} onChange={(e)=>setSearchInp(e.target.value)}/>
                     <button type="submit">Search</button>
+                    <input type="text" className={styles.searchInput} onChange={(e)=>setSearchInp(e.target.value)} placeholder="eg: math"/>
+                   
                 </form>
-                
-                
+                <Select onChange={(e)=>{setSort(e.value)}} options={sortOptions} styles={selectStyles} placeholder="Sort"/>
+                <Select onChange={(e)=>{setDay(e.value)}} options={dayOptions} styles={selectStyles} placeholder="Day"/>
+                <Select onChange={(e)=>{setMonth(e.value)}} options={monthOptions} styles={selectStyles} placeholder="Month"/>
             </div>
 
             <h1 className={styles.title}>All Sessions:</h1>

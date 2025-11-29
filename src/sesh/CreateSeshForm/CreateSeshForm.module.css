@@ -22,7 +22,7 @@
     border: solid #646cff;
     gap: 2px;
     width: 200px;
-    height: 250px;
+    height: 300px;
 }
 .previewContainer p{
     margin: 0;
@@ -73,5 +73,6 @@
     border-radius: 0px;
     &:hover{
         border-color: #646cff;
+        background-color: #1a1a1a;
     }
 }

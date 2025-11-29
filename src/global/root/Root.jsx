@@ -11,7 +11,7 @@ export default function Root() {
             <div className={styles.Header}>
                 <Header scrollTargetRef={mainRef}/>
             </div>
-            <main ref={mainRef}>
+            <main ref={mainRef} className={styles.main}>
                 <Outlet />
             </main>
             <div className={styles.Footer}>

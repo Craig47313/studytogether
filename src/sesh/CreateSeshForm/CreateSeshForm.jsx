@@ -104,6 +104,10 @@ export default function CreateSeshForm(props){
             toast.warn("Please log in to create a study session");
             console.log("prevented bad submission");
             return;
+        }else if(desc?.length > 220){
+            toast.warn("Please make your description shorter");
+            console.log("prevented bad submission");
+            return;
         }
 
         setLoading(true);
@@ -112,7 +116,7 @@ export default function CreateSeshForm(props){
         
         const docSnap = await getDoc(userDocRef);
         if (!docSnap.exists()) {
-            await setDoc(userDocRef, { listings: [] });
+            await setDoc(userDocRef, { listings: [], signups: [] });
         }
         const listingId = crypto.randomUUID();
 
@@ -125,14 +129,17 @@ export default function CreateSeshForm(props){
             startTime: startTime,
             endTime: endTime,
             description: desc,
-            host: user.email,
+            host: {email: user.email, id: user.uid},
             id: listingId,
+            attendees: [
+                {email: user.email, id: user.uid}
+            ],
             amtSignedUp: 1
         }
         console.log("newListing:", newListing);
 
         await updateDoc(userDocRef, {
-            listings: arrayUnion(newListing)
+            listings: arrayUnion(listingId)
         });
 
         await setDoc(listDocRef, newListing);
@@ -140,28 +147,28 @@ export default function CreateSeshForm(props){
         setLoading(false);
     }
     const monthOptions = [
-        {value: 10, label: "november"},
-        {value: 11, label: "december"},
-        {value: 0, label: "january"},
-        {value: 1, label: "february"},
-        {value: 2, label: "march"},
-        {value: 3, label: "april"},
-        {value: 4, label: "may"},
-        {value: 6, label: "july"},
-        {value: 7, label: "august"},
-        {value: 8, label: "september"},
-        {value: 9, label: "october"}
+        {value: "10", label: "november"},
+        {value: "11", label: "december"},
+        {value: "00", label: "january"},
+        {value: "01", label: "february"},
+        {value: "03", label: "march"},
+        {value: "04", label: "april"},
+        {value: "05", label: "may"},
+        {value: "06", label: "july"},
+        {value: "07", label: "august"},
+        {value: "08", label: "september"},
+        {value: "09", label: "october"}
     ]
     const dayOptions = [
-        {value: "1", label: "1"},
-        {value: "2", label: "2"},
-        {value: "3", label: "3"},
-        {value: "4", label: "4"},
-        {value: "5", label: "5"},
-        {value: "6", label: "6"},
-        {value: "7", label: "7"},
-        {value: "8", label: "8"},
-        {value: "9", label: "9"},
+        {value: "01", label: "1"},
+        {value: "02", label: "2"},
+        {value: "03", label: "3"},
+        {value: "04", label: "4"},
+        {value: "05", label: "5"},
+        {value: "06", label: "6"},
+        {value: "07", label: "7"},
+        {value: "08", label: "8"},
+        {value: "09", label: "9"},
         {value: "10", label: "10"},
         {value: "11", label: "11"},
         {value: "12", label: "12"},
@@ -303,7 +310,9 @@ export default function CreateSeshForm(props){
                     <p>Day: {monthPreview} {day}</p>
                     <p>Start time: {convTime(startTime)}</p>
                     <p>End time: {convTime(endTime)}</p>
+                    <p>Amt attending: 0</p>
                     <p>Description: {desc}</p>
+                    
                 </div>
             </div>
         </div>
