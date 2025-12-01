@@ -10,8 +10,22 @@
 }
 .seshTitle{
     padding: 0px;
-    margin: 10px;
+    margin: 0px;
 }
+.attendTitle{
+    padding: 0;
+    margin: 0;
+    font-size: 50px;
+    position: relative;
+    left: -28%;
+}
+
+.attendRow{
+    display: flex;
+    flex-direction: column;
+
+}
+
 .hostingButton{
     border-radius: 0px;
     cursor:default;
@@ -32,10 +46,12 @@
 .leaveSession{
     color: red;
 }
+
 .sessions{
     display: flex;
     flex-direction: row;
     overflow-x: scroll;
+    overflow-y: hidden;
     flex-wrap: nowrap;
     gap: 15px;
     position: relative;
@@ -54,19 +70,23 @@
     overflow-y: scroll;
     overflow-x: hidden;
 }
+
 .searchContainer{
     position: relative;
     padding-top: 10px;
     display: flex;
     flex-direction: row;
 }
+
 .searchButton{
     height: 50px;
 }
+
 .title{
-    position: absolute;
-    left: 600px;
-    top: -30px;
+    margin: 0;
+    padding: 0px;
+    padding-left: 30px;
+    font-size: 50px;
 }
 
 form button{
@@ -76,6 +96,7 @@ form button{
         background-color: #646cff;
     }
 }
+
 form input{
     position: relative;
     background-color: #332f8e;

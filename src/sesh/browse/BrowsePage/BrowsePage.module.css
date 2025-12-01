@@ -5,11 +5,11 @@
     border: solid #646cff;
     gap: 2px;
     width: 250px;
-    height: 270px;
+    height: 300px;
 }
 .seshTitle{
     padding: 0px;
-    margin: 10px;
+    margin: 0px;
 }
 .hostingButton{
     border-radius: 0px;
@@ -24,7 +24,9 @@
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    overflow-y: hidden;
 }
+
 
 .sessions{
     display: grid;
@@ -60,10 +62,12 @@
     height: 50px;
 }
 .title{
-    position: absolute;
-    left: 600px;
-    top: -30px;
+    margin: 0;
+    padding: 0px;
+    padding-left: 30px;
+    font-size: 50px;
 }
+
 
 form button{
     border-radius: 0px;

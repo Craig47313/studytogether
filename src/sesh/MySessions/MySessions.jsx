@@ -2,7 +2,7 @@ import { arrayRemove, collection, doc, getDoc, getDocs, setDoc, updateDoc } from
 import { db } from '../../lib/firebase';
 import styles from './MySessions.module.css';
 import useAuthStore from '../../lib/useAuthStore';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Select from 'react-select';
 
@@ -21,6 +21,8 @@ export async function getAllSessions() {
 export default function MySessions(){
 const user = useAuthStore((state) => state.user);
 
+    const navigate = useNavigate();
+
     //use states
     const [searchParams, setSearchParams] = useSearchParams();
     const query = searchParams.get('q') || "";
@@ -32,7 +34,7 @@ const user = useAuthStore((state) => state.user);
     const [searchInp, setSearchInp] = useState("");
     const [month, setMonth] = useState(null);
     const [day, setDay] = useState(null);
-    const [title, setTitle] = useState("All Sessions:");
+    const [title, setTitle] = useState("No Search Parameter");
 
 
 
@@ -88,13 +90,15 @@ const user = useAuthStore((state) => state.user);
         });
 
         let sessionsAttending = filtered.filter(listing =>{
+            let good = true;
             if(listings.includes(listing.id)){
-                return false;
-            }if(signups.includes(listing.id)){
-                return true;
+                good = false;
+            }else if(signups.includes(listing.id)){
+                good = good && true;
             }else{
-                return false;
+                good = false;
             }
+            return good;
         });
 
         //sort the sessions
@@ -200,6 +204,7 @@ const user = useAuthStore((state) => state.user);
             return timeString;
         }
     }
+
     const monthOptions = [
         {value: null, label: "any"},
         {value: "10", label: "november"},
@@ -214,6 +219,7 @@ const user = useAuthStore((state) => state.user);
         {value: "08", label: "september"},
         {value: "09", label: "october"}
     ]
+
     const dayOptions = [
         {value: null, label: "any"},
         {value: "01", label: "1"},
@@ -248,6 +254,7 @@ const user = useAuthStore((state) => state.user);
         {value: "30", label: "30"},
         {value: "31", label: "31"}
     ]
+
     const leaveSession = async(sessionId) => {
         if(!user){
             toast.warn("Cannot join session while logged out");
@@ -278,7 +285,7 @@ const user = useAuthStore((state) => state.user);
         loadListings();
     }
 
-    const buttons = attendResults.map((result) => {
+    const attendPreviews = attendResults.map((result) => {
         //console.log(result);
         if(!result){
             return "";
@@ -289,30 +296,66 @@ const user = useAuthStore((state) => state.user);
                 <h2 className={styles.seshTitle}>{result.title || "no title"} </h2>
                 <p>Host:</p>
                 <p className={styles.hostEmail}> {result.host.email}</p>
-                <button onClick={() => leaveSession(result.id)} 
-                    className={styles.leaveButton}>
-                    <p className={styles.leaveSession}>Leave Session</p>
-                </button>
                 <p>Day: {month} {result.day}</p>
                 <p>Start time: {convTime(result.startTime)}</p>
                 <p>End time: {convTime(result.endTime)}</p>
                 <p>Amount Attending: {result.amtSignedUp}</p>
-                <p>Description: {result.description}</p>
+                <p style={{
+                    overflowY: "scroll",
+                    height: "65px"
+                }}>Description: {result.description}</p> 
+                <button onClick={() => leaveSession(result.id)} 
+                    className={styles.leaveButton}>
+                    <p className={styles.leaveSession}>Leave Session</p>
+                </button>
             </div>
         );
-    })
-    const handleSearch = (e) =>{
+    });
+
+    const seeAttendees = () => {
+        navigate("/");
+    }
+
+    const hostPreviews = hostResults.map((result) => { //creates all of the previews of the things you're hosting
+        //console.log(result);
+        if(!result){
+            return "";
+        }
+        const month = monthOptions.find(option => option.value === result.month).label.slice(0,3);
+        return (
+            <div className={styles.previewContainer} key={crypto.randomUUID()}>
+                <h2 className={styles.seshTitle}>{result.title || "no title"} </h2>
+                <p>Day: {month} {result.day}</p>
+                <p>Start time: {convTime(result.startTime)}</p>
+                <p>End time: {convTime(result.endTime)}</p>
+                <p>Amount Attending: {result.amtSignedUp}</p>
+                <p style={{
+                    overflowY: "scroll",
+                    height: "65px"
+                }}>Description: {result.description}</p> 
+                <button onClick={() => seeAttendees(result.id)} 
+                    className={styles.seeAttendeesButton}>
+                    <p className={styles.leaveSession}>See Attendees</p>
+                </button>
+            </div>
+        );
+    });
+
+    const handleSearch = (e) =>{ //handles when the search box is submitted
         e.preventDefault();
         const newSearchParams = {};
         newSearchParams.q = searchInp;
         setSearchParams(newSearchParams);
+        setTitle(searchInp !== "" ? searchInp : "No Search Parameter");
     }
+
     const sortOptions = [
         {value: "earliest", label: "earliest"},
         {value: "latest", label: "latest"},
         {value: "numPeople", label:"#people"}
     ]
-    const selectStyles = {
+
+    const selectStyles = { //have to do it like this since it's easiest. <-- found this method in the docs for select
         menuList: (baseStyles, state) => ({
             ...baseStyles,
             backgroundColor: '#332f8e'
@@ -375,10 +418,21 @@ const user = useAuthStore((state) => state.user);
             </div>
 
             
-
-            <div className={styles.sessions}>
-                {attendResults.length !== 0 ? buttons : "Loading..."}
+            <div className={styles.attendRow}>
+                <h1 className={styles.attendTitle}>
+                    Sessions you're attending:
+                </h1>
+                <div className={styles.sessions}>
+                    {attendResults.length !== 0 ? attendPreviews: "Loading..."}
+                </div>
+                <h1 className={styles.attendTitle}>
+                    Sessions you're hosting:
+                </h1>
+                <div className={styles.sessions} style={{height: "220px",paddingBottom:"20px"}}>
+                    {hostResults.length !== 0 ? hostPreviews: "Loading..."}
+                </div>
             </div>
+            
             
 
 

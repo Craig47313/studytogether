@@ -261,7 +261,10 @@ export default function BrowsePage(){
                 <p>Start time: {convTime(result.startTime)}</p>
                 <p>End time: {convTime(result.endTime)}</p>
                 <p>Amount Attending: {result.amtSignedUp}</p>
-                <p>Description: {result.description}</p>
+                <p style={{
+                    overflowY: "scroll",
+                    height: "65px"
+                }}>Description: {result.description}</p>
             </div>
         );
     })
