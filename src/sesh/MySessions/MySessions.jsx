@@ -83,7 +83,9 @@ const user = useAuthStore((state) => state.user);
                 /*
                 console.log(listing.id + "in listings");
                 listing.status = "Hosting";*/
+                console.log(listing.title + " by " + listing.host.email + " is hosted by you");
                 return true;
+                
             }else{
                 return false;
             }
@@ -92,18 +94,17 @@ const user = useAuthStore((state) => state.user);
         let sessionsAttending = filtered.filter(listing =>{
             let good = true;
             if(listings.includes(listing.id)){
-                good = false;
+                return false;
             }else if(signups.includes(listing.id)){
-                good = good && true;
+                return true
             }else{
-                good = false;
+                return false
             }
-            return good;
         });
 
         //sort the sessions
         if(sort === "earliest"){
-            sessionsHosting = filtered.sort((a, b)=>{
+            sessionsHosting = sessionsHosting.sort((a, b)=>{
                 
                 const aTotal = a.month + "/" + a.day + "/" + a.startTime; 
                 const bTotal = b.month + "/" + b.day + "/" + b.startTime; 
@@ -116,7 +117,7 @@ const user = useAuthStore((state) => state.user);
                     return 0;
                 }
             });   
-            sessionsAttending = filtered.sort((a, b)=>{
+            sessionsAttending = sessionsAttending.sort((a, b)=>{
                 
                 const aTotal = a.month + "/" + a.day + "/" + a.startTime; 
                 const bTotal = b.month + "/" + b.day + "/" + b.startTime; 
@@ -130,7 +131,7 @@ const user = useAuthStore((state) => state.user);
                 }
             });  
         }else if(sort === "latest"){
-            sessionsHosting = filtered.sort((a, b)=>{
+            sessionsHosting = sessionsHosting.sort((a, b)=>{
                 
                 const aTotal = a.month + "/" + a.day + "/" + a.startTime; 
                 const bTotal = b.month + "/" + b.day + "/" + b.startTime; 
@@ -143,7 +144,7 @@ const user = useAuthStore((state) => state.user);
                     return 0;
                 }
             }); 
-            sessionsAttending = filtered.sort((a, b)=>{
+            sessionsAttending = sessionsAttending.sort((a, b)=>{
                 
                 const aTotal = a.month + "/" + a.day + "/" + a.startTime; 
                 const bTotal = b.month + "/" + b.day + "/" + b.startTime; 
@@ -157,7 +158,7 @@ const user = useAuthStore((state) => state.user);
                 }
             }); 
         }else if(sort === "numPeople"){
-            sessionsHosting = filtered.sort((a, b)=>{
+            sessionsHosting = sessionsHosting.sort((a, b)=>{
                 //console.log(aTotal);
                 if(a.amtSignedUp > b.amtSignedUp){
                     return -1;
@@ -167,7 +168,7 @@ const user = useAuthStore((state) => state.user);
                     return 0;
                 }
             }); 
-            sessionsAttending = filtered.sort((a, b)=>{
+            sessionsAttending = sessionsAttending.sort((a, b)=>{
                 //console.log(aTotal);
                 if(a.amtSignedUp > b.amtSignedUp){
                     return -1;
@@ -179,8 +180,8 @@ const user = useAuthStore((state) => state.user);
             }); 
         }
 
-        setAttendResults(sessionsAttending.length > 0 ? filtered : exampleResults);
-        setHostResults(sessionsHosting.length > 0 ? filtered : exampleResults);
+        setAttendResults(sessionsAttending.length > 0 ? sessionsAttending : exampleResults);
+        setHostResults(sessionsHosting.length > 0 ? sessionsHosting : exampleResults);
         console.log("results set");
         console.log("sessions attending");
         console.log(sessionsAttending);
@@ -428,7 +429,7 @@ const user = useAuthStore((state) => state.user);
                 <h1 className={styles.attendTitle}>
                     Sessions you're hosting:
                 </h1>
-                <div className={styles.sessions} style={{height: "220px",paddingBottom:"20px"}}>
+                <div className={styles.sessions} style={{paddingBottom:"0px"}}>
                     {hostResults.length !== 0 ? hostPreviews: "Loading..."}
                 </div>
             </div>

@@ -96,7 +96,7 @@ export default function CreateSeshForm(props){
 
     const handleSubmit = async (e) =>{ 
         e.preventDefault();
-        if(!(desc!==undefined && endTime !== null && startTime !== null && day !== null && month !== null && !isLoading)){
+        if(!(desc!==null && endTime !== null && startTime !== null && day !== null && month !== null)){
             toast.warn("Not all required fields have been filled");
             console.log("prevented bad submission");
             return;
@@ -104,8 +104,12 @@ export default function CreateSeshForm(props){
             toast.warn("Please log in to create a study session");
             console.log("prevented bad submission");
             return;
-        }else if(desc?.length > 220){
+        }else if(desc?.length > 300){
             toast.warn("Please make your description shorter");
+            console.log("prevented bad submission");
+            return;
+        }else if(desc?.length < 20){
+            toast.warn("Please make your description longer (20+ characters)");
             console.log("prevented bad submission");
             return;
         }
@@ -261,7 +265,10 @@ export default function CreateSeshForm(props){
 
     return (
         <div className={styles.CreateSeshFormContainer}>
-            {isLoading && <h1>Loading...</h1>}
+            {isLoading ? <h1>Loading...</h1> :
+            
+            <h3 style={{whiteSpace:"pre-wrap"}}>{"IT IS RECCOMENDED:\n\nPut a zoom link in description\nTitle is the name of a class\nYou be nice to others\ndon't be fake...\nyou can't take down listings\n\nIf you really need a listing taken down or other help\ncontact the dev: \n@calebcraig81@gmail.com | Caleb Craig"}</h3>
+            }
             
             <form onSubmit={handleSubmit}>
                 <div className={styles.form}>
@@ -269,7 +276,7 @@ export default function CreateSeshForm(props){
                         <p>Title</p>
                         <input type="text" placeholder="type here" className={styles.descInput} onChange={(e)=>{setTitle(e.target.value)}}/>
                     </div>
-                    <div className={`${styles.part} ${desc!==null ? styles.done : ""}`}>
+                    <div className={`${styles.part} ${desc?.length >= 20 ? styles.done : ""}`}>
                         <p>Description</p>
                         <input type="text" placeholder="type here" className={styles.descInput} onChange={(e)=>{setDesc(e.target.value)}}/>
                     </div>
@@ -297,7 +304,7 @@ export default function CreateSeshForm(props){
                         styles={selectStyles}
                         />
                     </div>
-                    <div className={`${styles.part} ${(desc!==undefined && endTime !== null && startTime !== null && day !== null && month !== null && !isLoading) ? styles.canSubmit : styles.cannotSubmit}`}>
+                    <div className={`${styles.part} ${((desc!==null) && endTime !== null && startTime !== null && day !== null && month !== null && !isLoading) ? styles.canSubmit : styles.cannotSubmit}`}>
                         <button onClick={handleSubmit} className={styles.submitButton} canSubmit={!isLoading}>Submit</button>   
                     </div>
                     
