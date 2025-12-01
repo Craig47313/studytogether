@@ -313,8 +313,8 @@ const user = useAuthStore((state) => state.user);
         );
     });
 
-    const seeAttendees = () => {
-        navigate("/");
+    const seeAttendees = (id) => {
+        navigate(`/preview/${id}`);
     }
 
     const hostPreviews = hostResults.map((result) => { //creates all of the previews of the things you're hosting
@@ -338,6 +338,7 @@ const user = useAuthStore((state) => state.user);
                     className={styles.seeAttendeesButton}>
                     <p className={styles.leaveSession}>See Attendees</p>
                 </button>
+
             </div>
         );
     });
