@@ -32,10 +32,13 @@ export default function Header(){
             <button className={style.headerButton} onClick={()=>navigate("/create")}>create listing</button>
             <button className={style.headerButton} onClick={()=>navigate("/browse")}>browse listings</button>
             <button className={style.headerButton} onClick={()=>goToMySessionsPage()}>my sessions</button>
-            <div className={style.authButtonContainer}>
-                {user ? <button onClick={logout} className={style.homeButton}>logout</button> //steal style from homebutton
-                : 
-                <GoogleButton/>}
+            <div className={style.rightContainer}>
+                <p>{(user !== null && user !== undefined) ? user.email : "No User"}</p>
+                <div className={style.authButtonContainer}>
+                    {user ? <button onClick={logout} className={style.homeButton}>logout</button> //steal style from homebutton
+                    : 
+                    <GoogleButton/>}
+                </div> 
             </div>
             
         </div>

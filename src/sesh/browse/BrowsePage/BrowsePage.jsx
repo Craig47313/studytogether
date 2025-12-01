@@ -33,6 +33,9 @@ export default function BrowsePage(){
     const [month, setMonth] = useState(null);
     const [day, setDay] = useState(null);
     const [title, setTitle] = useState("All Sessions:");
+
+
+    
     async function loadListings() {
         const allSessions = await getAllSessions();
         if(allSessions.length == 0){
@@ -44,9 +47,13 @@ export default function BrowsePage(){
             isGood = isGood && (day == null || listing.day == day);
             return isGood;
         });
+
+
         console.log("user");
         console.log(user);
-        if(user !== null && user !== undefined){
+
+
+        if(user !== null && user !== undefined){ //setting params which require knowledge of the session ownership and attendance (ie are your the host or have you attended it)
             console.log("user !== null");
 
             const userDocRef = doc(db,"userStuff",user.uid); 
@@ -143,6 +150,7 @@ export default function BrowsePage(){
 
     useEffect(() => {
         loadListings();
+        console.log(query);
     }, [query, day, month, sort, user]);
 
     const convTime = (timeString) =>{
@@ -243,6 +251,8 @@ export default function BrowsePage(){
         return (
             <div className={styles.previewContainer} key={crypto.randomUUID()}>
                 <h2 className={styles.seshTitle}>{result.title || "no title"} </h2>
+                <p>Host:</p>
+                <p className={styles.hostEmail}> {result.host.email !== user?.email ? result.host.email : "You are hosting this"}</p>
                 <button onClick={() => joinSession(result.id)} disabled={result.status !== "Joinable"} 
                     className={result.status==="Joinable" ? styles.joinButton : (result.status === "Hosting" ? styles.hostingButton : styles.attendingButton)}>
                     {result.status==="Joinable" ? "Click to join" : (result.status === "Hosting" ? "Hosting" : "Attending")}
@@ -325,7 +335,7 @@ export default function BrowsePage(){
                 <Select onChange={(e)=>{setSort(e.value)}} options={sortOptions} styles={selectStyles} placeholder="Sort"/>
                 <Select onChange={(e)=>{setDay(e.value)}} options={dayOptions} styles={selectStyles} placeholder="Day"/>
                 <Select onChange={(e)=>{setMonth(e.value)}} options={monthOptions} styles={selectStyles} placeholder="Month"/>
-                <h1 className={styles.title}>{title}</h1>
+                <h1 className={styles.title}>{query === "" ? "All sessions" : query}</h1>
             </div>
 
             

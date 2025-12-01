@@ -4,7 +4,7 @@
     flex-direction: column;
     border: solid #646cff;
     gap: 2px;
-    width: 200px;
+    width: 250px;
     height: 270px;
 }
 .seshTitle{
@@ -28,17 +28,19 @@
 
 .sessions{
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     justify-items: center;
     gap: 15px;
     position: relative;
     margin-left: 10px;
-    margin-right: 10px;
+    margin-right: 15px;
     width: 100%;
     padding-top: 20px;
     
 }
-
+.hostEmail{
+    color: #646cff;
+}
 .BrowsePage {
     position: absolute;
     left: 0;
